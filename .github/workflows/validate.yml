@@ -1,0 +1,22 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  compose-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare env file
+        run: cp .env.example .env
+
+      - name: Validate docker compose file
+        run: docker compose config --quiet
+
+      - name: Check shell scripts
+        run: bash -n postgres/init/01-create-databases.sh && for f in scripts/*.sh; do bash -n "$f"; done
